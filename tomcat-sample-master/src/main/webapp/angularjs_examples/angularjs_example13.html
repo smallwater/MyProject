@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<script src="/lib/angular-1.5.x/angular.min.js"></script>
+<body>
+
+	<div ng-app="myApp" ng-controller="namesCtrl">
+
+		<!-- Filter the contents of variables using a vertical pipe | -->
+		<p>The name is: {{ name | uppercase }}</p>
+
+		<ul ng-repeat="country in countries | orderBy:'countryName'">
+			<li>{{ country.countryName }} </li>
+		</ul>
+
+		<!-- The currency filter formats a number with locale-specific currency formatting. -->
+		<p>Local price is: {{ localPrice | currency }}</p>
+
+		<!-- The 'filter' filter can apply a string-based filter to an array of Strings -->
+		<p>Colors that contain the letter "i"</p>
+		<ul ng-repeat="color in colors | filter : 'i' ">
+			<li>{{ color }}</li>
+		</ul>
+
+		<!-- Filters can be based on dynamic user input into an ng-model. This is amazing! -->
+		<p>Course Filter</p> 
+		<p><input type="text" ng-model="courseTitleSearchCriteria"></p>
+		<ul ng-repeat="courseTitle in courseTitles | filter : courseTitleSearchCriteria">
+			<li>{{ courseTitle }}</li>
+		</ul>
+
+		<p>Person Origin Array</p>
+		<ul ng-repeat="entry in personOriginArray">
+			<li>{{ entry.person + ", " + entry.birthCity }}</li>
+		</ul>
+
+		<table border="1">
+			<tr>
+				<th ng-click="orderByMe('person')">Person</th>
+				<th ng-click="orderByMe('birthCity')">Birth City</th>
+			</tr>
+			<tr ng-repeat="entry in personOriginArray | orderBy:myOrderBy">
+				<td>{{ entry.person }}</td>
+				<td>{{ entry.birthCity }}</td>
+			</tr>
+		</table>
+
+	</div><!-- ng-app="myApp" ng-controller="namesCtrl" -->
+
+	<script>
+		angular.module('myApp', []).controller('namesCtrl', function($scope){
+			$scope.name = "John";	
+
+			$scope.countries = [
+				{countryName: 'United States'}, 
+				{countryName: 'Russia'}, 
+				{countryName: 'China'}, 
+				{countryName: 'Saudi Arabia'}, 
+				{countryName: 'Greenland'}
+			];
+
+			$scope.localPrice = 3.44;
+
+			$scope.colors = [
+				'Red',
+				'Orange',
+				'Yellow',
+				'Green',
+				'Blue',
+				'Indigo',
+				'Violet',
+			];
+
+			$scope.courseTitles = [
+				'Russian Language',
+				'Chinese Language',
+				'Spanish Language',
+				'Biology',
+				'Physics',
+				'Sociology',
+				'Economics',
+				'Psychology',
+				'Linguisitcs',
+				'Statisitcs'
+			];
+
+			$scope.personOriginArray = [
+				{person: 'William', birthCity: 'New York'},
+				{person: 'Shien', birthCity: 'Taipei'},
+				{person: 'Fan', birthCity: 'Tianjin'},
+				{person: 'Ivan', birthCity: 'Moscow'},
+				{person: 'Rodrigo', birthCity: 'Sao Paulo'},
+				{person: 'Johan', birthCity: 'Antwerp'}
+			];
+
+			$scope.orderByMe = function(x){
+				$scope.myOrderBy = x;
+			}
+		});
+	</script>
+
+</body>
+</html>

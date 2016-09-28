@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<script src="/lib/angular-1.5.x/angular.min.js"></script>
+<body>
+
+	<div ng-app="" ng-init="person={firstName:'John', lastName:'Doe'}">
+		<p>The name is: {{ person.firstName + " " + person.lastName }}</p>
+		<p>The name again is: <span ng-bind="person.firstName + ' ' + person.lastName"></span></p>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" ng-controller="formController">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Sample Webapp</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="lib/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="lib/bootstrap-3.3.6-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="lib/bootstrap-3.3.6-dist/css/bootstrap_default_theme.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type = "text/javascript" src = "/lib/jquery/jquery-2.2.0.min.js"></script>
+    <script type = "text/javascript" src = "/lib/angular-1.5.x/angular.min.js"></script>
+
+    <!-- D3.js visualization library -->
+    <script src="lib/d3-v3/d3.v3.min.js"  charset="utf-8"></script>
+    <style>
+      .chart div {
+        font: 10px sans-serif;
+        background-color: steelblue;
+        text-align: right;
+        padding: 3px;
+        margin: 1px;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body role="document">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#" ng-click="toggleMenu('mainContent')"><span id="homeMenuItem">Home</span></a>
+          <a class="navbar-brand" href="#" ng-click="toggleMenu('randomNumberGenerator')"><span id="randomNumberGeneratorMenuItem">Random Number Generator</span></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <div id="mainContent" ng-show="showMainContent">
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+          <h1>Sample Webapp</h1>
+          <p>Just a few things I'm working on right now</p>
+        </div>
+        <ul>
+          <li>Java: This is a Java application with an embedded Tomcat Servlet container</li>
+          <li>Bootstrap: Playing with a few widgets</li>
+          <li>D3: Visualization</li>
+        </ul>
+      </div><!-- mainContent -->
+
+      <div id="randomNumberGenerator" ng-show="showRandomNumberGenerator">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Random Number Generator</h3>
+              </div>
+
+              <div class="panel-body">
+                <form ng-submit="processForm()">
+                  <p>Number of random integers to generate:</p>
+                  <input type = "number" name = "quantity" size = "4" ng-model="formData.quantity"><br />
+                  <br/>
+                  <p>Upper bound for generated integers:</p>
+                  <input type = "number" name = "bound" size = "7" ng-model="formData.bound"/><br />
+                  <br/>     
+                  <button class="btn btn-default" type="submit">Generate Random Numbers</button> 
+                </form>
+              </div>
+            </div>
+          </div><!-- col-sm-4 -->
+          <div class="col-sm-4">
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                <h3 class="panel-title">Results</h3>
+              </div>
+              <div class="panel-body">
+                <div id = "stage" style = "background-color:cc0;">
+                  {{ rawData }}
+                </div>
+              </div>
+            </div>
+          </div><!-- col-sm-4 -->        
+          <div class="col-sm-4">
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                <h3 class="panel-title">D3 Visualization</h3>
+              </div>
+              <div class="panel-body">
+                <div class="chart">
+                </div><!-- end chart -->
+              </div>
+            </div>
+          </div><!-- col-sm-4 -->        
+        </div><!-- row -->
+      </div><!-- randomNumberGenerator -->
+
+      <script>
+        angular.module("myApp", [])
+          .controller('formController', 
+            function($scope, $http) {
+              $scope.formData = {};
+              $scope.formData.quantity = 4;
+              $scope.formData.bound = 250;
+
+              $scope.processForm = function(){
+                $http({
+                  method : 'POST',
+                  url : '/RandomNumberGeneratorServlet',
+                  data : $.param($scope.formData),
+                  headers: {'Content-Type': 'application/x-www-form-urlencoded' }
+                })
+                .success(function(data){
+                  console.log(data);
+                  $scope.rawData = data;
+
+                  //convert the JSON object into a plain array
+                  var chartData = [];
+                  for(var x in data){
+                    chartData.push(data[x]);
+                  }
+
+                  //use the D3.js library to draw a bar chart visulization of the random numbers we received
+                  //scale the vizualization to the width of our panel (325 px)
+                  var x = d3.scale.linear()
+                      .domain([0, $scope.formData.bound])
+                      .range([0, 325]);
+                  //clear the chart, if anything was previously there
+                  d3.select(".chart")
+                    .selectAll("div")
+                      .remove();
+                  //populate the chart
+                  d3.select(".chart")
+                    .selectAll("div")
+                      .data(chartData)
+                    .enter().append("div")
+                      .style("width", function(d) { return x(d) + "px"; })
+                      .text(function(d) { return d; });
+                });//end success(...)
+
+              };//end $scope.processForm = function(){...
+
+              $scope.toggleMenu = function(widgetName){
+                if(widgetName === "mainContent"){
+                  $scope.showMainContent = true;
+                  $scope.showRandomNumberGenerator = false;
+                }else if(widgetName === "randomNumberGenerator"){
+                  $scope.showMainContent = false;
+                  $scope.showRandomNumberGenerator = true;
+                }
+              };//end $scope.myFunction
+
+              $scope.toggleMenu("mainContent");
+
+            }//end function($scope, $http) {
+
+          );//end .controller('formController')...
+        </script>
+
+    </div> <!-- /container -->
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<script src="../lib/angular-1.5.x/angular.min.js"></script>
+<body>
+
+	<!--
+		AngularJS modules define AngularJS applications. The ng-app directive defines the application.
+
+		The ng-controller directive defines the controller. AngularJS controllers control AngularJS applications.
+	-->
+	<div ng-app="myApp" ng-controller="myCtrl">
+		First Name: <input type="text" ng-model="firstName"><br/>
+		Last Name: <input type="text" ng-model="lastName"><br/>
+		<br/>
+		Full Name: {{firstName + " " + lastName}}
+	</div>
+
+	<script>
+		// An AngularJS module defines an application, which is a scope within which we
+		// can refer to DOM elements..
+		var app = angular.module('myApp', []);
+
+		// An AngularJS controller controls the application.
+		app.controller('myCtrl', function($scope){
+			$scope.firstName = "John";
+			$scope.lastName = "Doe";
+		});
+	</script>
+
+
+</body>
+</html>

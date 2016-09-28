@@ -1,0 +1,5 @@
+{
+  "name": "William's Tomcat Sample",
+  "description": "A sample Java app with an embedded Tomcat servlet container for deployment on Heroku.",
+  "addons": [ "heroku-postgresql" ]
+}

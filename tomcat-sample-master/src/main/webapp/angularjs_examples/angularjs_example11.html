@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<script src="../lib/angular-1.5.x/angular.min.js"></script>
+<body>
+
+	<!--
+		AngularJS modules define AngularJS applications. The ng-app directive defines the root element of an AngularJS application.
+
+		The ng-controller directive defines the controller. AngularJS controllers control AngularJS applications.
+	-->
+	<div ng-app="myApp" ng-controller="myCtrl">
+		Names:
+		<ul>
+			<li ng-repeat="currentName in names">
+				{{ currentName }}
+			</li>
+		</ul>
+		Students:
+		<ul>
+			<li ng-repeat="currentStudent in students">
+				{{ currentStudent.name + " - " + currentStudent.country }}
+			</li>
+			Top students are: {{ topStudents() }}<br/>
+			Janitor is: {{ janitor }}
+		</ul>
+
+		<form name="myForm">
+			Email:
+			<input type="email" name="myAddress" ng-model="text">
+			<span ng-show="myForm.myAddress.$error.email">Not a valid email address.</span>
+			<h1>Email Form Input Field Status:</h1>
+			<ul>
+				<li>Valid? : {{ myForm.myAddress.$valid }}</li>
+				<li>Dirty? : {{ myForm.myAddress.$dirty }}</li>
+				<li>Touched? : {{ myForm.myAddress.$touched }}</li>
+			</ul>
+		</form>
+
+	</div>
+
+	<script>
+		// An AngularJS module defines an application, which is a scope within which we
+		// can refer to DOM elements..
+		var app = angular.module('myApp', []);
+
+		// An AngularJS controller controls the application.
+		app.controller('myCtrl', function($scope){
+			$scope.names = ['Moe', 'Larry', 'Curly'];
+			$scope.students = [
+				{name: 'William', country: 'United States'},
+				{name: 'Jackie Chan', country: 'China'},
+				{name: 'Penguin', country: 'Antarctica'}
+			];
+			$scope.janitor = "Aristotle";
+			$scope.topStudents = function() {
+				//return $scope.names[0] + "and" $scope.names[2];
+				//return "abc";
+				return $scope.names[0] + " and " + $scope.names[2];
+			};
+		});
+	</script>
+
+
+</body>
+</html>
